@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { formatDate } from "../../lib/utils";
 import instance from "../../lib/axios";
 import toast from "react-hot-toast";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import DeleteConfirmationModal from "../components/DeleteConformationModal";
 
 function NoteCard({ note, setNotes, onNoteClick }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
