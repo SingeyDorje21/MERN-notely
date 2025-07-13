@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { formatDate } from "../../lib/utils";
 import instance from "../../lib/axios";
 import toast from "react-hot-toast";
-import DeleteConfirmationModal from "../components/DeleteConformationModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 function NoteCard({ note, setNotes, onNoteClick }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -28,6 +28,7 @@ function NoteCard({ note, setNotes, onNoteClick }) {
 
   const handleDeleteClick = (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent card click from firing
     setShowDeleteModal(true);
   };
 
