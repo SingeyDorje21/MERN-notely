@@ -4,6 +4,7 @@ import cors from "cors";
 import path from "path";
 import cookieParser from "cookie-parser";
 import passport from "passport";
+import { fileURLToPath } from "url";
 
 import notesRoutes from "./routes/notesRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -15,7 +16,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
-const __dirname = path.resolve();
+const __dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 // middleware
 app.use(
