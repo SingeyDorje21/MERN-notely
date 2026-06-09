@@ -19,6 +19,10 @@ const noteSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    totNotes:{
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true } // createdAt, updatedAt
 );

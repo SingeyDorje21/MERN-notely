@@ -24,7 +24,7 @@ export async function getNoteById(req, res) {
 export async function createNote(req, res) {
   try {
     const { title, content } = req.body;
-    const note = new Note({ title, content, userId: req.user._id });
+    const note = new Note({ title, content, userId: req.user._id, totNotes: req.user.totNotes + 1 });
 
     const savedNote = await note.save();
     res.status(201).json(savedNote);
@@ -56,7 +56,7 @@ export async function updateNote(req, res) {
 
 export async function deleteNote(req, res) {
   try {
-    const deletedNote = await Note.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+    const deletedNote = await Note.findOneAndDelete({ _id: req.params.id, userId: req.user._id, totNotes: req.user.totNotes - 1 });
     if (!deletedNote) return res.status(404).json({ message: "Note not found" });
     res.status(200).json({ message: "Note deleted successfully!" });
   } catch (error) {
