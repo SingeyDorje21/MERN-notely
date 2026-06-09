@@ -12,8 +12,8 @@ const rateLimiter = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.log("Rate limit error", error);
-    next(error);
+    console.warn("Rate limit error (degrading gracefully):", error.message || error);
+    next(); // fall back and allow request to proceed
   }
 };
 

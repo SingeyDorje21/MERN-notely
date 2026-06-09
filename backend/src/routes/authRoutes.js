@@ -17,26 +17,33 @@ router.get(
 // GET /auth/google/callback — Handle Google OAuth callback
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
-    session: false,
-    failureRedirect: `${process.env.CLIENT_URL}/login`,
-  }),
-  (req, res) => {
-    // Sign JWT with user ID
-    const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+  (req, res, next) => {
+    passport.authenticate("google", { session: false }, (err, user, info) => {
+      if (err) {
+        console.error("Google OAuth authentication error:", err);
+        return res.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent(err.message || 'auth_failed')}`);
+      }
+      if (!user) {
+        console.error("Google OAuth authentication failed: No user found/created. Info:", info);
+        return res.redirect(`${process.env.CLIENT_URL}/login?error=no_user`);
+      }
+      
+      // Sign JWT with user ID
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
 
-    // Set httpOnly cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+      // Set httpOnly cookie
+      res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
 
-    // Redirect to frontend
-    res.redirect(process.env.CLIENT_URL);
+      // Redirect to frontend
+      res.redirect(process.env.CLIENT_URL);
+    })(req, res, next);
   }
 );
 

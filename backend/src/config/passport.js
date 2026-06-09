@@ -29,6 +29,7 @@ passport.use(
 
         done(null, user);
       } catch (error) {
+        console.error("Error in GoogleStrategy verify callback:", error);
         done(error, null);
       }
     }
