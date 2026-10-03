@@ -1,45 +1,32 @@
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 import HomePage from "./pages/HomePage";
-import CreatePage from "./pages/CreatePage";
 import NoteDetailPage from "./pages/NoteDetailPage";
 import LoginPage from "./pages/LoginPage";
+import ProfilePage from "./pages/ProfilePage";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
 
 const App = () => {
   return (
     <AuthProvider>
-      <div className="relative h-full w-full">
-        <div className="absolute inset-0 -z-10 h-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_60%,#00FF9D40_100%)]"></div>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/create"
-            element={
-              <ProtectedRoute>
-                <CreatePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/note/:id"
-            element={
-              <ProtectedRoute>
-                <NoteDetailPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/" element={<HomePage />} />
+          <Route path="/note/:id" element={<NoteDetailPage />} />
+          <Route path="/create" element={<Navigate to="/note/new" replace />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
     </AuthProvider>
   );
 };

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import axios from "../../lib/axios";
+import axios from "@/lib/axios";
 
 const AuthContext = createContext(null);
 
@@ -35,6 +35,20 @@ export const AuthProvider = ({ children }) => {
     window.location.href = `${baseUrl}/api/auth/google`;
   };
 
+  // Local development only: sign in as a dev user without Google.
+  // The backend route exists only when DEV_LOGIN=true and the request is from localhost.
+  const devLogin = async () => {
+    try {
+      await axios.post("/auth/dev-login");
+      const res = await axios.get("/auth/me");
+      setUser(res.data);
+      navigate("/");
+    } catch (error) {
+      console.error("Dev login error:", error);
+      throw error;
+    }
+  };
+
   // Clear session and redirect to login page
   const logout = async () => {
     try {
@@ -47,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, devLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );
