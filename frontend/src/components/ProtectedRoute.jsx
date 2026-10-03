@@ -1,4 +1,5 @@
 import { Navigate } from "react-router";
+import { Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ children }) => {
@@ -6,8 +7,8 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-primary" aria-label="Loading" />
       </div>
     );
   }

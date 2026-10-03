@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
-import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/verifyToken.js";
+import { issueAuthCookie } from "../utils/authCookie.js";
 
 const router = express.Router();
 
@@ -19,27 +19,18 @@ router.get(
   "/google/callback",
   (req, res, next) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
+      // Only fixed error codes go in the URL; details stay in the server log
       if (err) {
         console.error("Google OAuth authentication error:", err);
-        return res.redirect(`${process.env.CLIENT_URL}/login?error=${encodeURIComponent(err.message || 'auth_failed')}`);
+        return res.redirect(`${process.env.CLIENT_URL}/login?error=auth_failed`);
       }
       if (!user) {
-        console.error("Google OAuth authentication failed: No user found/created. Info:", info);
-        return res.redirect(`${process.env.CLIENT_URL}/login?error=no_user`);
+        console.error("Google OAuth authentication failed. Info:", info);
+        const code = info?.message === "invalid_state" ? "auth_failed" : "no_user";
+        return res.redirect(`${process.env.CLIENT_URL}/login?error=${code}`);
       }
       
-      // Sign JWT with user ID
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "7d",
-      });
-
-      // Set httpOnly cookie
-      res.cookie("token", token, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      });
+      issueAuthCookie(res, user._id);
 
       // Redirect to frontend
       res.redirect(process.env.CLIENT_URL);

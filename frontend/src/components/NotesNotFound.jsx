@@ -1,20 +1,30 @@
-import { NotebookIcon } from "lucide-react";
 import { Link } from "react-router";
+import { NotebookPen, Plus, SearchX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-const NotesNotFound = () => {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 space-y-6 max-w-md mx-auto text-center">
-      <div className="bg-primary/10 rounded-full p-8">
-        <NotebookIcon className="size-10 text-primary" />
-      </div>
-      <h3 className="text-2xl font-bold">No notes yet</h3>
-      <p className="text-base-content/70">
-        Ready to organize your thoughts? Create your first note to get started on your journey.
-      </p>
-      <Link to="/create" className="btn btn-primary">
-        Create Your First Note
-      </Link>
+// Empty state for "no notes yet", or for a search with no matches when `query` is set
+const NotesNotFound = ({ query, onClearSearch }) => (
+  <div className="flex flex-col items-center justify-center rounded-xl border border-dashed px-6 py-16 text-center">
+    <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+      {query ? <SearchX className="size-6" /> : <NotebookPen className="size-6" />}
     </div>
-  );
-};
+    <h2 className="text-lg font-semibold">{query ? `No notes match “${query}”` : "No notes yet"}</h2>
+    <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+      {query ? "Check the spelling, or try a shorter word." : "Notes you write will show up here."}
+    </p>
+    {query ? (
+      <Button variant="outline" className="mt-6" onClick={onClearSearch}>
+        Clear search
+      </Button>
+    ) : (
+      <Button asChild className="mt-6">
+        <Link to="/note/new">
+          <Plus />
+          Write your first note
+        </Link>
+      </Button>
+    )}
+  </div>
+);
+
 export default NotesNotFound;

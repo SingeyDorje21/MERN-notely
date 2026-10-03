@@ -27,6 +27,15 @@ const noteSchema = new mongoose.Schema(
   { timestamps: true } // createdAt, updatedAt
 );
 
+// One index per list sort in notesController (including its _id tiebreaker), so
+// a page is read in order from the index instead of sorting all of a user's notes
+noteSchema.index({ userId: 1, updatedAt: -1, _id: -1 });
+noteSchema.index({ userId: 1, createdAt: -1, _id: -1 }); // read in reverse for "oldest"
+noteSchema.index(
+  { userId: 1, title: 1, _id: 1 },
+  { collation: { locale: "en", strength: 2, numericOrdering: true } } // must match the query's collation
+);
+
 const Note = mongoose.model("Note", noteSchema);
 
 export default Note;
